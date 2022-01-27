@@ -1,0 +1,180 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div class="row">
+    <div class="col-md-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title">Data Rak</p>
+                <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#modalTambahRak" style="margin-bottom: 10px;">Add Data</button>
+                <br />
+                <div class="container">
+                    <main role="main" class="pb-3">
+                        <div class="table-responsive">
+                            <table id="manage_rak" class="table" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Nama Rak</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title">Rak Yang terpakai</p>
+                <div class="container">
+                    <main role="main" class="pb-3">
+                        <div class="table-responsive">
+                            <table id="rak_terpakai" class="table" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Nama Rak</th>
+                                        <th>Jumlah</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*modal*@
+<div class="modal fade" id="modalTambahRak" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Data Rak</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group row">
+                        <label for="recipient-name" class="col-sm-2 col-form-label">Rak: </label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="Value" id="Value">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary save" onclick="Validation();">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+    $(document).ready(function () {
+            var url = '@TempData["url"]';
+            $('#manage_rak').DataTable({
+                "ajax": {
+                    url: "https://localhost:44395/api/Rak/GetAllRak",
+                    type: "GET",
+                    datatype: "json",
+                    dataSrc: "data"
+                },
+                "columnDefs": [
+                    { "className": "dt-center", "targets": "_all" }
+                ],
+                "columns": [
+                    {
+                        "data": null, "render": function (data, type, full, meta) {
+                            //return '<div class="center vertical-center" style="font-size: 0.8vw">' + (meta.row + 1) + '</div>';
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    {
+                        "data": "value", "render": function (data, type, row, meta) {
+                            return '<div class="center">' + data + '</div>';
+                        }
+                    },
+                    {
+                        "data": "id",
+                        "render": function (data, type, row, meta) {
+                            return '<td><form action="@Url.Action("UnblockUser", "BlockedUser")" method="post"><input type="hidden" name="username" value=' + data + '><button type="submit" class="btn btn-success" onclick="return confirm(`Apakah anda yakin ?`)">Unblock</button></form></td>';
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+    <script>
+    $(document).ready(function () {
+            var url = '@TempData["url"]';
+        $('#rak_terpakai').DataTable({
+                "ajax": {
+                url: "https://localhost:44395/api/Rak/GetRakPakai",
+                    type: "GET",
+                    datatype: "json",
+                    dataSrc: "data"
+                },
+                "columnDefs": [
+                    { "className": "dt-center", "targets": "_all" }
+                ],
+                "columns": [
+                    {
+                        "data": null, "render": function (data, type, full, meta) {
+                            //return '<div class="center vertical-center" style="font-size: 0.8vw">' + (meta.row + 1) + '</div>';
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    {
+                        "data": "value", "render": function (data, type, row, meta) {
+                            return '<div class="center">' + data + '</div>';
+                        }
+                    },
+                    {
+                        "data": "Jumlah", "render": function (data, type, row, meta) {
+                            return '<div class="center">' + data + '</div>';
+                        }
+                    }
+
+                ]
+            });
+        });
+    </script>
+<script>
+    function Validation() {
+        if ($("#Value").val() == "") {
+            alert("data tidak boleh kosong")
+        } else {
+            Save();
+        }
+        
+    }
+    function Save() {
+        var rak = new Object()
+        rak.Value = $("#Value").val();
+        $.ajax({
+            "url": "/Rak/Create",
+            "type": "POST",
+            "datatype": "json",
+            "data": rak
+        }).then((result) => {
+            if (result.data[0] != 0) {
+                alert("data tersimpan")
+                window.location.reload
+            }
+            else {
+                alert("data gagal tersimpan")
+            }
+            $("#modalTambahRak").modal('hide');
+        })
+    }
+</script>
+}

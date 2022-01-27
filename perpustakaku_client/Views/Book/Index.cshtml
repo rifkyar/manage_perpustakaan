@@ -1,0 +1,145 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title">Data Buku</p>
+                <div class="container">
+                    <button class="btn btn-outline-primary" data-toggle="modal" data-target="#modalTambah" style="margin-bottom: 10px;">Tambah data</button>
+                    <br />
+                    <main role="main" class="pb-3">
+                        <div class="table-responsive">
+                            <table id="manage_book" class="table" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Kode Buku</th>
+                                        <th>Judul Buku</th>
+                                        <th>Tahun Buku</th>
+                                        <th>Kode Rak</th>
+                                        <th>Jenis</th>
+                                        <th>Genre</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*modal*@
+<div class="modal fade" id="modalTambah" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Recipient:</label>
+                        <input type="text" class="form-control" id="recipient-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Message:</label>
+                        <textarea class="form-control" id="message-text"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Send message</button>
+            </div>
+        </div>
+    </div>
+</div>
+@*<div class="input-group mb-3">
+        <select class="form-control" id="SupplierItemText">
+            <option value="">--Pilih Rak--</option>
+            @foreach (var item in ViewBag.rak)
+            {
+                <option value="@item.id">@item.value</option>
+            }
+        </select>
+    </div>
+    <div class="input-group mb-3">
+        <select class="form-control" id="SupplierItemText">
+            <option value="">--Pilih Jenis--</option>
+            @foreach (var item in ViewBag.jenis)
+            {
+                <option value="@item.id">@item.value</option>
+            }
+        </select>
+    </div>*@
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            var url = '@TempData["url"]';
+            $('#manage_book').DataTable({
+                "ajax": {
+                    url: "https://localhost:44395/api/Book/GetAllBook",
+                    type: "GET",
+                    datatype: "json",
+                    dataSrc: "data"
+                },
+                "columnDefs": [
+                    { "className": "dt-center", "targets": "_all" }
+                ],
+                "columns": [
+                    {
+                        "data": null, "render": function (data, type, full, meta) {
+                            //return '<div class="center vertical-center" style="font-size: 0.8vw">' + (meta.row + 1) + '</div>';
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    {
+                        "data": "kode_buku", "render": function (data, type, row, meta) {
+                            return '<div class="center">' + data + '</div>';
+                        }
+                    },
+                    {
+                        "data": "judul_buku", "render": function (data, type, row, meta) {
+                            return '<div class="center">' + data + '</div>';
+                        }
+                    },
+                    {
+                        "data": "tahun_buku", "render": function (data, type, row, meta) {
+                            return '<div class="center">' + data + '</div>';
+                        }
+                    },
+                    {
+                        "data": "kode_rak", "render": function (data, type, row, meta) {
+                            return '<div class="center">' + data + '</div>';
+                        }
+                    },
+                    {
+                        "data": "kode_jenis", "render": function (data, type, row, meta) {
+                            return '<div class="center">' + data + '</div>';
+                        }
+                    },
+                    {
+                        "data": "kode_genre", "render": function (data, type, row, meta) {
+                            return '<div class="center">' + data + '</div>';
+                        }
+                    },
+                    {
+                        "data": "kode_buku",
+                        "render": function (data, type, row, meta) {
+                            return '<td><form action="@Url.Action("UnblockUser", "BlockedUser")" method="post"><input type="hidden" name="username" value=' + data + '><button type="submit" class="btn btn-success" onclick="return confirm(`Apakah anda yakin ?`)">Unblock</button></form></td>';
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+}
