@@ -14,4 +14,8 @@ namespace perpustakaan.ViewModels
     {
         public string Value { get; set; }
     }
+    public class DeleteRak
+    {
+        public int Id { get; set; }
+    }
 }

@@ -43,5 +43,13 @@ namespace perpustakaan.Repositories
             var result = await sqlConnection.ExecuteAsync(sp, parameters, commandType: command);
             return result;
         }
+        public async Task<int> DeleteRak(int Id)
+        {
+            var sp = "SP_DeleteRak";
+            parameters.Add("Id", Id);
+            var command = CommandType.StoredProcedure;
+            var result = await sqlConnection.ExecuteAsync(sp, parameters, commandType: command);
+            return result;
+        }
     }
 }

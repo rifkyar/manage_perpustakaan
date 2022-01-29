@@ -134,5 +134,35 @@ namespace perpustakaan.Controllers
             }
 
         }
+        [HttpGet("DeleteRak")]
+        public async Task<IActionResult> DeleteRakAsync(int Id)
+        {
+            SqlConnection connection = new SqlConnection(conn);
+            try
+            {
+                connection.Open();
+            }
+            catch
+            {
+                //Log.LogError($"Gagal Connect Ke Database.");
+                return StatusCode(500, res.ResponseMessage("500", "False", "There is no connection. Please contact your system Administrator!", null));
+            }
+            try
+            {
+
+                var result = await rak.DeleteRak(Id);
+                if (result>0)
+                {
+                    return Ok(new { Code = "200", Status = "True", Message = "Berhasil Update Data", Data = result });
+                }
+                return NotFound(res.ResponseMessage("404", "False", "Update data gagal ", new { Id }));
+            }
+            catch (Exception e)
+            {
+                //Log.LogError($"Gagal Update data . Message : {e.Message}");
+                return StatusCode(500, res.ResponseMessage("500", "False", e.Message, null));
+            }
+
+        }
     }
 }

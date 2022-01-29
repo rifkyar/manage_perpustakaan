@@ -151,9 +151,24 @@
 <script>
     function Validation() {
         if ($("#Value").val() == "") {
-            alert("data tidak boleh kosong")
+            Swal.fire({
+                title: 'Data Kosong',
+                text: 'Harap lengkapi data'
+            });
         } else {
-            Save();
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                showCancelButton: true,
+                confirmButtonText: 'Save',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Save();
+                } else if (result.isDenied) {
+                    Swal.fire('Changes are not saved', '', 'info')
+                }
+
+            })
+            
         }
         
     }
@@ -167,13 +182,26 @@
             "data": rak
         }).then((result) => {
             if (result.data[0] != 0) {
-                alert("data tersimpan")
-                window.location.reload
+                Swal.fire(
+                    'Success!',
+                    'Your file has been inserted.',
+                    'success'
+                ).then(() => {
+                    
+                    $('#manage_rak').DataTable().ajax.reload();
+                })
             }
             else {
-                alert("data gagal tersimpan")
+                Swal.fire(
+                    'Failed!',
+                    'Your file not inserted.',
+                    'failed'
+                ).then(() => {
+                    
+                    $('#manage_rak').DataTable().ajax.reload();
+                })
             }
-            $("#modalTambahRak").modal('hide');
+            $('#modalTambahRak').modal('hide');
         })
     }
 </script>
