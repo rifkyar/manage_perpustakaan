@@ -42,7 +42,7 @@ namespace perpustakaan.Controllers
                 {
                     return Ok(new { Code = "200", Status = "True", Message = "Berhasil tampil Data", Data = result });
                 }
-                return NotFound(res.ResponseMessage("404", "False", "tampil data gagal ", null));
+                return NotFound(res.ResponseMessage("404", "False", "tampil data gagal/Kosong ", null));
             }
             catch (Exception e)
             {

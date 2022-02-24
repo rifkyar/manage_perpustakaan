@@ -8,7 +8,7 @@
         <div class="card">
             <div class="card-body">
                 <p class="card-title">Data Rak</p>
-                <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#modalTambahRak" style="margin-bottom: 10px;">Add Data</button>
+                <button class="btn btn-outline-primary btn-sm" id="addRak" style="margin-bottom: 10px;">Add Data</button>
                 <br />
                 <div class="container">
                     <main role="main" class="pb-3">
@@ -88,6 +88,7 @@
                     datatype: "json",
                     dataSrc: "data"
                 },
+                "pageLength": 3,
                 "columnDefs": [
                     { "className": "dt-center", "targets": "_all" }
                 ],
@@ -106,7 +107,7 @@
                     {
                         "data": "id",
                         "render": function (data, type, row, meta) {
-                            return '<td><form action="@Url.Action("UnblockUser", "BlockedUser")" method="post"><input type="hidden" name="username" value=' + data + '><button type="submit" class="btn btn-success" onclick="return confirm(`Apakah anda yakin ?`)">Unblock</button></form></td>';
+                            return '<button class="btn btn-danger btn-sm" onclick= Delete("' + row.id + '");><i class="mdi mdi-trash-can"></i></button>';
                         }
                     }
                 ]
@@ -122,7 +123,8 @@
                     type: "GET",
                     datatype: "json",
                     dataSrc: "data"
-                },
+            },
+            "pageLength": 3,
                 "columnDefs": [
                     { "className": "dt-center", "targets": "_all" }
                 ],
@@ -148,61 +150,101 @@
             });
         });
     </script>
-<script>
-    function Validation() {
-        if ($("#Value").val() == "") {
-            Swal.fire({
-                title: 'Data Kosong',
-                text: 'Harap lengkapi data'
-            });
-        } else {
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                showCancelButton: true,
-                confirmButtonText: 'Save',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Save();
-                } else if (result.isDenied) {
-                    Swal.fire('Changes are not saved', '', 'info')
-                }
+    <script>
+        function Validation() {
+            if ($("#Value").val() == "") {
+                Swal.fire({
+                    title: 'Data Kosong',
+                    text: 'Harap lengkapi data'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    showCancelButton: true,
+                    confirmButtonText: 'Save',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Save();
+                    } else if (result.isDenied) {
+                        Swal.fire('Changes are not saved', '', 'info')
+                    }
 
-            })
-            
+                })
+
+            }
+
         }
-        
-    }
-    function Save() {
-        var rak = new Object()
-        rak.Value = $("#Value").val();
-        $.ajax({
-            "url": "/Rak/Create",
-            "type": "POST",
-            "datatype": "json",
-            "data": rak
-        }).then((result) => {
-            if (result.data[0] != 0) {
-                Swal.fire(
-                    'Success!',
-                    'Your file has been inserted.',
-                    'success'
-                ).then(() => {
-                    
-                    $('#manage_rak').DataTable().ajax.reload();
-                })
-            }
-            else {
-                Swal.fire(
-                    'Failed!',
-                    'Your file not inserted.',
-                    'failed'
-                ).then(() => {
-                    
-                    $('#manage_rak').DataTable().ajax.reload();
-                })
-            }
-            $('#modalTambahRak').modal('hide');
-        })
-    }
-</script>
+        $("#addRak").button().click(function () {         // button click
+            $('#modalTambahRak').modal('show')   // Modal launch
+        });
+        function Save() {
+            var rak = new Object()
+            rak.Value = $("#Value").val();
+            $.ajax({
+                "url": "/Rak/Create",
+                "type": "POST",
+                "datatype": "json",
+                "data": rak
+            }).then((result) => {
+                if (result.data[0] != 0) {
+                    Swal.fire(
+                        'Success!',
+                        'Your file has been inserted.',
+                        'success'
+                    ).then(() => {
+                        $('#modalTambahRak').modal('hide');
+                        $('#manage_rak').DataTable().ajax.reload();
+                    })
+                }
+                else {
+                    Swal.fire(
+                        'Failed!',
+                        'Your file not inserted.',
+                        'failed'
+                    ).then(() => {
+                        $('#modalTambahRak').modal('hide');
+                        $('#manage_rak').DataTable().ajax.reload();
+                    })
+                }
+            })
+        }
+        function Delete(Id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        "url": "/Rak/Delete/",
+                        "datatype": "json",
+                        "data": { id: Id }
+                    }).then((result) => {
+                        if (result.data[0] != 0) {
+                            Swal.fire(
+                                'Success!',
+                                'Your file has been deleted.',
+                                'success'
+                            ).then(() => {
+                                $('#manage_rak').DataTable().ajax.reload();
+                            })
+                        }
+                        else {
+                            Swal.fire(
+                                'Failed!',
+                                'Your file not deleted.',
+                                'failed'
+                            ).then(() => {
+                                $('#manage_rak').DataTable().ajax.reload();
+                            })
+                        }
+                    })
+                }
+            })
+        }
+    </script>
 }

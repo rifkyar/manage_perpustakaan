@@ -33,5 +33,10 @@ namespace perpustakaku_client.Controllers
             var create = client.PostAsync("Rak/SaveRak", ByteContent).Result;
             return Json(new { data = create });
         }
+        public JsonResult Delete(int Id)
+        {
+            var delete = client.GetAsync("Rak/DeleteRak?Id=" + Id).ToString();
+            return Json(new { data = delete });
+        }
     }
 }
